@@ -1,0 +1,2905 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💰 Финансы</title>
+    <style>
+        /* ====== CSS Reset ====== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* ====== iOS Variables ====== */
+        :root {
+            /* Light Theme (iOS) */
+            --bg-main: #F2F2F7;
+            --bg-card: #FFFFFF;
+            --bg-secondary: #F8F8F8;
+            --text-primary: #000000;
+            --text-secondary: #3C3C43;
+            --text-tertiary: #8E8E93;
+            --accent-blue: #007AFF;
+            --accent-green: #34C759;
+            --accent-red: #FF3B30;
+            --accent-orange: #FF9500;
+            --accent-purple: #AF52DE;
+            --accent-yellow: #FFD60A;
+            --border-light: #C6C6C8;
+            --border-heavy: #AEAEB2;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --radius-small: 10px;
+            --radius-medium: 16px;
+            --radius-large: 22px;
+            --safe-bottom: env(safe-area-inset-bottom, 20px);
+            --status-bar: env(safe-area-inset-top, 20px);
+        }
+
+        .dark {
+            /* Dark Theme */
+            --bg-main: #000000;
+            --bg-card: #1C1C1E;
+            --bg-secondary: #2C2C2E;
+            --text-primary: #FFFFFF;
+            --text-secondary: #EBEBF5;
+            --text-tertiary: #8E8E93;
+            --accent-blue: #0A84FF;
+            --accent-green: #30D158;
+            --accent-red: #FF453A;
+            --accent-orange: #FF9F0A;
+            --accent-purple: #BF5AF2;
+            --accent-yellow: #FFD60A;
+            --border-light: #38383A;
+            --border-heavy: #47474A;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .pink {
+            /* Pink Theme */
+            --bg-main: #FFF5F9;
+            --bg-card: #FFFFFF;
+            --bg-secondary: #FFF0F5;
+            --text-primary: #2D2D2D;
+            --text-secondary: #FF5A8C;
+            --text-tertiary: #FF8CB3;
+            --accent-blue: #FF5A8C;
+            --accent-green: #FF5A8C;
+            --accent-red: #FF2D55;
+            --accent-orange: #FF9500;
+            --accent-purple: #FF8CB3;
+            --accent-yellow: #FFD700;
+            --border-light: #FFD6E0;
+            --border-heavy: #FFB8D0;
+            --shadow: 0 4px 20px rgba(255, 90, 140, 0.15);
+        }
+
+        /* ====== Base Styles ====== */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.4;
+            padding-top: var(--status-bar);
+            padding-bottom: calc(80px + var(--safe-bottom));
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* Hide scrollbar but keep functionality */
+        body::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* ====== PIN Screen ====== */
+        #pinScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-main);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            padding: 20px;
+            transition: opacity 0.3s;
+        }
+
+        .pin-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .pin-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .pin-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent-blue);
+            margin-bottom: 8px;
+        }
+
+        .pin-subtitle {
+            color: var(--text-tertiary);
+            font-size: 16px;
+        }
+
+        .pin-dots {
+            display: flex;
+            gap: 20px;
+            margin: 30px 0 40px;
+        }
+
+        .pin-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--border-light);
+            transition: all 0.2s;
+        }
+
+        .pin-dot.active {
+            background: var(--accent-blue);
+            transform: scale(1.2);
+        }
+
+        .pin-keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            width: 280px;
+        }
+
+        .pin-key {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 2px solid var(--border-light);
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pin-key:active {
+            transform: scale(0.95);
+            background: var(--bg-secondary);
+        }
+
+        .pin-key.delete {
+            border: none;
+            background: var(--bg-secondary);
+            font-size: 24px;
+        }
+
+        /* ====== Main Container ====== */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 16px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* ====== Header ====== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-top: 8px;
+        }
+
+        .app-title {
+            font-size: 34px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+        }
+
+        .theme-selector {
+            display: flex;
+            gap: 10px;
+            background: var(--bg-card);
+            padding: 8px;
+            border-radius: var(--radius-medium);
+            border: 1px solid var(--border-light);
+        }
+
+        .theme-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .theme-btn.active {
+            border-color: var(--accent-blue);
+            transform: scale(1.1);
+        }
+
+        .theme-btn.light { background: #F2F2F7; }
+        .theme-btn.dark { background: #1C1C1E; }
+        .theme-btn.pink { background: #FF5A8C; }
+
+        /* ====== Balance Card ====== */
+        .balance-section {
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .balance-card {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            border-radius: var(--radius-large);
+            padding: 28px;
+            color: white;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.4s ease-out;
+        }
+
+        .balance-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            animation: float 20s linear infinite;
+        }
+
+        .balance-label {
+            font-size: 15px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .balance-amount {
+            font-size: 52px;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 24px;
+            font-variant-numeric: tabular-nums;
+            color: white;
+        }
+
+        .balance-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .balance-stat {
+            flex: 1;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.8;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        /* ====== Savings Card ====== */
+        .savings-card {
+            background: linear-gradient(135deg, var(--accent-green), #2ECC71);
+            border-radius: var(--radius-large);
+            padding: 24px;
+            color: white;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .savings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .savings-title {
+            font-size: 18px;
+            font-weight: 700;
+            opacity: 0.9;
+        }
+
+        .savings-amount {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .savings-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .savings-btn {
+            flex: 1;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--radius-medium);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .savings-btn:active {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(0.98);
+        }
+
+        /* ====== Quick Actions ====== */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .action-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-medium);
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:active {
+            transform: scale(0.98);
+            background: var(--bg-secondary);
+        }
+
+        .action-icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .action-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .action-subtitle {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 4px;
+        }
+
+        /* ====== Goals Section ====== */
+        .goals-section {
+            margin-bottom: 24px;
+        }
+
+        .goals-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .goal-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-medium);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            animation: slideUp 0.4s ease-out;
+            position: relative;
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .goal-title {
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .goal-emoji {
+            font-size: 24px;
+        }
+
+        .goal-amount {
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .goal-progress {
+            height: 8px;
+            background: var(--border-light);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .goal-progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        .goal-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+
+        .goal-remaining {
+            color: var(--accent-red);
+            font-weight: 600;
+        }
+
+        /* ====== Add Transaction Form ====== */
+        .form-section {
+            background: var(--bg-card);
+            border-radius: var(--radius-large);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .form-header {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .type-toggle {
+            flex: 1;
+            padding: 16px;
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-medium);
+            background: var(--bg-card);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .type-toggle.active {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: white;
+        }
+
+        .amount-input-container {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .amount-input {
+            width: 100%;
+            font-size: 56px;
+            font-weight: 800;
+            text-align: center;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            outline: none;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .amount-input::placeholder {
+            color: var(--border-light);
+        }
+
+        .category-container {
+            display: none;
+            margin-bottom: 24px;
+        }
+
+        .category-container.visible {
+            display: block;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .category-option {
+            padding: 14px 8px;
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-medium);
+            background: var(--bg-card);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .category-option.active {
+            border-color: var(--accent-green);
+            background: var(--accent-green);
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(52, 199, 89, 0.3);
+        }
+
+        .category-emoji {
+            font-size: 24px;
+            margin-bottom: 6px;
+        }
+
+        .category-name {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .comment-input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-medium);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 16px;
+            resize: none;
+            outline: none;
+            margin-bottom: 24px;
+            font-family: inherit;
+        }
+
+        .comment-input:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+            border: none;
+            border-radius: var(--radius-medium);
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:active {
+            transform: translateY(2px);
+        }
+
+        .submit-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent);
+            transform: rotate(30deg);
+            transition: transform 0.5s;
+        }
+
+        .submit-btn:active::after {
+            transform: rotate(30deg) translate(20%, 20%);
+        }
+
+        /* ====== Transactions List ====== */
+        .transactions-section {
+            margin-bottom: 24px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .transactions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .transaction-item {
+            background: var(--bg-card);
+            border-radius: var(--radius-medium);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .transaction-item:hover {
+            transform: translateX(4px);
+        }
+
+        .transaction-item.deleting {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        .transaction-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-small);
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .transaction-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .transaction-category {
+            font-weight: 600;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .transaction-comment {
+            font-size: 14px;
+            color: var(--text-tertiary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .transaction-amount {
+            font-weight: 700;
+            font-size: 18px;
+            font-variant-numeric: tabular-nums;
+            text-align: right;
+        }
+
+        .transaction-amount.income {
+            color: var(--accent-green);
+        }
+
+        .transaction-amount.expense {
+            color: var(--accent-red);
+        }
+
+        .transaction-date {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            text-align: right;
+        }
+
+        /* ====== Limits Section ====== */
+        .limits-section {
+            margin-bottom: 24px;
+        }
+
+        .limits-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .limit-item {
+            background: var(--bg-card);
+            border-radius: var(--radius-medium);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            animation: slideUp 0.4s ease-out;
+        }
+
+        .limit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .limit-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .limit-emoji {
+            font-size: 20px;
+        }
+
+        .limit-amount {
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .limit-progress {
+            height: 6px;
+            background: var(--border-light);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .limit-bar {
+            height: 100%;
+            background: var(--accent-green);
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+
+        .limit-bar.warning {
+            background: var(--accent-orange);
+        }
+
+        .limit-bar.danger {
+            background: var(--accent-red);
+        }
+
+        .limit-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+
+        .limit-remaining {
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+
+        /* ====== Analytics Page ====== */
+        .analytics-section {
+            margin-bottom: 24px;
+        }
+
+        .analytics-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-large);
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .analytics-chart {
+            height: 200px;
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .chart-bar {
+            flex: 1;
+            background: linear-gradient(to top, var(--accent-blue), var(--accent-purple));
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: height 0.3s;
+        }
+
+        .chart-label {
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-tertiary);
+        }
+
+        .analytics-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .analytics-stat {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-medium);
+            padding: 16px;
+            text-align: center;
+        }
+
+        .analytics-value {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 4px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .analytics-label {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .category-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .category-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-medium);
+        }
+
+        .category-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-stat-emoji {
+            font-size: 20px;
+        }
+
+        .category-percentage {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* ====== Profile Page ====== */
+        .profile-section {
+            margin-bottom: 24px;
+        }
+
+        .profile-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-large);
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            margin: 0 auto 20px;
+            color: white;
+        }
+
+        .profile-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .profile-stat {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-medium);
+            padding: 16px;
+        }
+
+        .profile-stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .profile-stat-label {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        /* ====== Bottom Navigation ====== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-light);
+            padding: 12px 20px calc(12px + var(--safe-bottom));
+            display: flex;
+            justify-content: space-around;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            background: none;
+            border: none;
+            color: var(--text-tertiary);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: var(--radius-medium);
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .nav-item.active {
+            color: var(--accent-blue);
+            background: var(--bg-main);
+        }
+
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .nav-item.active::after {
+            opacity: 1;
+        }
+
+        .nav-label {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* ====== Modals ====== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border-radius: var(--radius-large);
+            padding: 24px;
+            width: 100%;
+            max-width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: modalSlide 0.3s ease-out;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ====== Easter Egg ====== */
+        .easter-egg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #ff0080, #00ff80, #0080ff, #ff8000);
+            background-size: 400% 400%;
+            z-index: 3000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            animation: rainbow 10s infinite linear;
+        }
+
+        .easter-egg-content {
+            text-align: center;
+            padding: 40px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: var(--radius-large);
+            backdrop-filter: blur(20px);
+        }
+
+        .easter-egg-title {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .easter-egg-text {
+            font-size: 18px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        /* ====== Animations ====== */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes modalSlide {
+            from {
+                opacity: 0;
+                transform: translateY(60px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes float {
+            0% { transform: rotate(0deg) translateX(0); }
+            100% { transform: rotate(360deg) translateX(0); }
+        }
+
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+
+        @keyframes confetti {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(500px) rotate(360deg); opacity: 0; }
+        }
+
+        /* ====== Loading ====== */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: opacity 0.3s;
+        }
+
+        .loading.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--border-light);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ====== Responsive ====== */
+        @media (max-width: 480px) {
+            .container {
+                padding: 12px;
+            }
+            
+            .category-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .balance-amount {
+                font-size: 44px;
+            }
+            
+            .amount-input {
+                font-size: 48px;
+            }
+        }
+
+        /* ====== Utility Classes ====== */
+        .hidden {
+            display: none !important;
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* ====== Custom Scrollbar ====== */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-main);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-light);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--border-heavy);
+        }
+    </style>
+</head>
+<body>
+    <!-- PIN Screen -->
+    <div id="pinScreen">
+        <div class="pin-header">
+            <div class="pin-icon">🔐</div>
+            <div class="pin-title">Финансы</div>
+            <div class="pin-subtitle">Введите PIN для доступа</div>
+        </div>
+        
+        <div class="pin-dots" id="pinDots">
+            <div class="pin-dot"></div>
+            <div class="pin-dot"></div>
+            <div class="pin-dot"></div>
+            <div class="pin-dot"></div>
+        </div>
+        
+        <div class="pin-keypad" id="pinKeypad">
+            <!-- Generated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Loading Screen -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container" id="mainContent" style="display: none;">
+        <!-- Home Page -->
+        <div class="page active" id="homePage">
+            <!-- Header -->
+            <div class="header">
+                <div class="app-title" onclick="handleTitleClick()">💰 Финансы</div>
+                <div class="theme-selector">
+                    <div class="theme-btn light active" onclick="setTheme('light')"></div>
+                    <div class="theme-btn dark" onclick="setTheme('dark')"></div>
+                    <div class="theme-btn pink" onclick="setTheme('pink')"></div>
+                </div>
+            </div>
+
+            <!-- Balance Card -->
+            <div class="balance-section">
+                <div class="balance-card">
+                    <div class="balance-label">Текущий баланс</div>
+                    <div class="balance-amount" id="balanceAmount">0 ₽</div>
+                    <div class="balance-stats">
+                        <div class="balance-stat">
+                            <div class="stat-label">Доходы</div>
+                            <div class="stat-value" id="incomeTotal">0 ₽</div>
+                        </div>
+                        <div class="balance-stat">
+                            <div class="stat-label">Расходы</div>
+                            <div class="stat-value" id="expenseTotal">0 ₽</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Savings Card -->
+            <div class="savings-card">
+                <div class="savings-header">
+                    <div class="savings-title">Отложенные деньги</div>
+                    <div class="savings-emoji">💰</div>
+                </div>
+                <div class="savings-amount" id="savingsAmount">0 ₽</div>
+                <div class="savings-actions">
+                    <button class="savings-btn" onclick="showModal('saveModal')">Отложить</button>
+                    <button class="savings-btn" onclick="showModal('takeModal')">Взять</button>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <div class="action-btn" onclick="showPage('analytics')">
+                    <div class="action-icon">📊</div>
+                    <div class="action-label">Аналитика</div>
+                    <div class="action-subtitle">Статистика трат</div>
+                </div>
+                <div class="action-btn" onclick="showModal('goalModal')">
+                    <div class="action-icon">🎯</div>
+                    <div class="action-label">Цели</div>
+                    <div class="action-subtitle">Добавить цель</div>
+                </div>
+                <div class="action-btn" onclick="showModal('limitsModal')">
+                    <div class="action-icon">⚡</div>
+                    <div class="action-label">Лимиты</div>
+                    <div class="action-subtitle">Контроль трат</div>
+                </div>
+                <div class="action-btn" onclick="showPage('profile')">
+                    <div class="action-icon">👤</div>
+                    <div class="action-label">Профиль</div>
+                    <div class="action-subtitle">Статистика</div>
+                </div>
+            </div>
+
+            <!-- Goals Section -->
+            <div class="goals-section">
+                <div class="section-header">
+                    <div class="section-title">Мои цели</div>
+                    <button class="action-btn" style="padding: 8px 16px;" onclick="showModal('goalModal')">+ Добавить</button>
+                </div>
+                <div class="goals-list" id="goalsList">
+                    <!-- Goals will be generated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Add Transaction Form -->
+            <div class="form-section">
+                <div class="form-header">
+                    <button class="type-toggle active" onclick="setTransactionType('expense')">Расход</button>
+                    <button class="type-toggle" onclick="setTransactionType('income')">Доход</button>
+                </div>
+                
+                <div class="amount-input-container">
+                    <input type="number" class="amount-input" id="amountInput" placeholder="0" step="0.01" min="0">
+                </div>
+
+                <!-- Category Container - initially hidden -->
+                <div class="category-container" id="categoryContainer">
+                    <div class="input-label" style="margin-bottom: 12px;">Категория</div>
+                    <div class="category-grid" id="categoryGrid">
+                        <!-- Categories will be generated by JavaScript when amount is entered -->
+                    </div>
+                </div>
+
+                <textarea class="comment-input" id="commentInput" placeholder="Комментарий (необязательно)"></textarea>
+
+                <button class="submit-btn" onclick="addTransaction()">Добавить операцию</button>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="transactions-section">
+                <div class="section-header">
+                    <div class="section-title">Последние операции</div>
+                    <button class="action-btn" style="padding: 8px 16px;" onclick="showAllTransactions()">Все</button>
+                </div>
+                <div class="transactions-list" id="transactionsList">
+                    <!-- Transactions will be generated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Page -->
+        <div class="page" id="analyticsPage">
+            <div class="header">
+                <div class="app-title">📊 Аналитика</div>
+                <button class="action-btn" style="padding: 8px 16px; font-size: 14px;" onclick="showPage('home')">← Назад</button>
+            </div>
+
+            <!-- Period Selector -->
+            <div class="quick-actions" style="margin-bottom: 20px;">
+                <button class="type-toggle active" onclick="setAnalyticsPeriod('month')">Месяц</button>
+                <button class="type-toggle" onclick="setAnalyticsPeriod('week')">Неделя</button>
+                <button class="type-toggle" onclick="setAnalyticsPeriod('year')">Год</button>
+            </div>
+
+            <!-- Analytics Cards -->
+            <div class="analytics-section">
+                <div class="analytics-card">
+                    <div class="section-title">Расходы по категориям</div>
+                    <div class="analytics-chart" id="analyticsChart">
+                        <!-- Chart will be generated by JavaScript -->
+                    </div>
+                </div>
+
+                <div class="analytics-card">
+                    <div class="section-title">Общая статистика</div>
+                    <div class="analytics-stats">
+                        <div class="analytics-stat">
+                            <div class="analytics-value" id="totalExpenses">0 ₽</div>
+                            <div class="analytics-label">Всего расходов</div>
+                        </div>
+                        <div class="analytics-stat">
+                            <div class="analytics-value" id="avgExpense">0 ₽</div>
+                            <div class="analytics-label">Средний расход</div>
+                        </div>
+                        <div class="analytics-stat">
+                            <div class="analytics-value" id="biggestExpense">0 ₽</div>
+                            <div class="analytics-label">Самая большая трата</div>
+                        </div>
+                        <div class="analytics-stat">
+                            <div class="analytics-value" id="expenseCount">0</div>
+                            <div class="analytics-label">Количество трат</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analytics-card">
+                    <div class="section-title">Распределение по категориям</div>
+                    <div class="category-stats" id="categoryStats">
+                        <!-- Category stats will be generated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Page -->
+        <div class="page" id="profilePage">
+            <div class="header">
+                <div class="app-title">👤 Профиль</div>
+                <button class="action-btn" style="padding: 8px 16px; font-size: 14px;" onclick="showPage('home')">← Назад</button>
+            </div>
+
+            <div class="profile-section">
+                <div class="profile-card">
+                    <div class="profile-avatar">💰</div>
+                    <div class="profile-name" id="userName">Финансовый гений</div>
+                    <div class="text-tertiary" style="margin-bottom: 20px;">Управляю финансами с умом</div>
+                </div>
+
+                <div class="profile-card">
+                    <div class="section-title" style="margin-bottom: 20px;">Моя статистика</div>
+                    <div class="profile-stats">
+                        <div class="profile-stat">
+                            <div class="profile-stat-value" id="profileTotalOps">0</div>
+                            <div class="profile-stat-label">Всего операций</div>
+                        </div>
+                        <div class="profile-stat">
+                            <div class="profile-stat-value" id="profileDaysActive">1</div>
+                            <div class="profile-stat-label">Дней с приложением</div>
+                        </div>
+                        <div class="profile-stat">
+                            <div class="profile-stat-value" id="profileSavingsRate">0%</div>
+                            <div class="profile-stat-label">Накопления</div>
+                        </div>
+                        <div class="profile-stat">
+                            <div class="profile-stat-value" id="profileGoalProgress">0%</div>
+                            <div class="profile-stat-label">Прогресс целей</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analytics-card">
+                    <div class="section-title" style="margin-bottom: 20px;">Настройки</div>
+                    <button class="submit-btn" onclick="showModal('settingsModal')" style="margin-bottom: 12px; background: var(--accent-purple);">⚙️ Настройки приложения</button>
+                    <button class="submit-btn" onclick="exportToCSV()" style="margin-bottom: 12px; background: var(--accent-green);">📤 Экспорт данных</button>
+                    <button class="submit-btn" onclick="showModal('backupModal')" style="margin-bottom: 12px; background: var(--accent-orange);">💾 Резервное копирование</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="showPage('home')">
+            <div>🏠</div>
+            <div class="nav-label">Главная</div>
+        </div>
+        <div class="nav-item" onclick="showPage('analytics')">
+            <div>📊</div>
+            <div class="nav-label">Аналитика</div>
+        </div>
+        <div class="nav-item" onclick="showModal('addModal')">
+            <div>➕</div>
+            <div class="nav-label">Добавить</div>
+        </div>
+        <div class="nav-item" onclick="showPage('goals')">
+            <div>🎯</div>
+            <div class="nav-label">Цели</div>
+        </div>
+        <div class="nav-item" onclick="showPage('profile')">
+            <div>👤</div>
+            <div class="nav-label">Профиль</div>
+        </div>
+    </div>
+
+    <!-- ====== MODALS ====== -->
+    <!-- Limits Modal -->
+    <div class="modal-overlay" id="limitsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">🎯 Лимиты расходов</div>
+                <button class="modal-close" onclick="hideModal('limitsModal')">✕</button>
+            </div>
+            <div id="limitsForm">
+                <!-- Limits form will be generated by JavaScript -->
+            </div>
+            <button class="submit-btn" onclick="saveLimits()" style="margin-top: 24px;">Сохранить лимиты</button>
+        </div>
+    </div>
+
+    <!-- Goal Modal -->
+    <div class="modal-overlay" id="goalModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">🎯 Новая цель</div>
+                <button class="modal-close" onclick="hideModal('goalModal')">✕</button>
+            </div>
+            <div class="input-group" style="margin-bottom: 16px;">
+                <div class="input-label">Название цели</div>
+                <input type="text" class="comment-input" id="goalName" placeholder="Новый телефон, путешествие...">
+            </div>
+            <div class="input-group" style="margin-bottom: 16px;">
+                <div class="input-label">Сумма цели</div>
+                <input type="number" class="comment-input" id="goalAmount" placeholder="100000" step="1000" min="100">
+            </div>
+            <div class="input-group" style="margin-bottom: 16px;">
+                <div class="input-label">Эмодзи</div>
+                <input type="text" class="comment-input" id="goalEmoji" placeholder="📱" maxlength="2">
+            </div>
+            <button class="submit-btn" onclick="addGoal()" style="margin-top: 16px;">Добавить цель</button>
+        </div>
+    </div>
+
+    <!-- Save Money Modal -->
+    <div class="modal-overlay" id="saveModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">💰 Отложить деньги</div>
+                <button class="modal-close" onclick="hideModal('saveModal')">✕</button>
+            </div>
+            <div class="input-group" style="margin-bottom: 16px;">
+                <div class="input-label">Сумма для отложения</div>
+                <input type="number" class="comment-input" id="saveAmount" placeholder="0" step="100" min="0">
+            </div>
+            <div class="input-group" style="margin-bottom: 16px;">
+                <div class="input-label">Комментарий (необязательно)</div>
+                <input type="text" class="comment-input" id="saveComment" placeholder="На отпуск, на подарок...">
+            </div>
+            <button class="submit-btn" onclick="saveMoney()" style="margin-top: 16px;">Отложить деньги</button>
+        </div>
+    </div>
+
+    <!-- Take Money Modal -->
+    <div class="modal-overlay" id="takeModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">💸 Взять из отложенных</div>
+                <button class="modal-close" onclick="hideModal('takeModal')">✕</button>
+            </div>
+            <div class="input-group" style="margin-bottom: 16px;">
+                <div class="input-label">Сумма для снятия</div>
+                <input type="number" class="comment-input" id="takeAmount" placeholder="0" step="100" min="0">
+            </div>
+            <div class="input-group" style="margin-bottom: 16px;">
+                <div class="input-label">Комментарий (необязательно)</div>
+                <input type="text" class="comment-input" id="takeComment" placeholder="На срочные нужды...">
+            </div>
+            <button class="submit-btn" onclick="takeMoney()" style="margin-top: 16px; background: var(--accent-orange);">Взять деньги</button>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">⚙️ Настройки</div>
+                <button class="modal-close" onclick="hideModal('settingsModal')">✕</button>
+            </div>
+            <div class="input-group" style="margin-bottom: 16px;">
+                <div class="input-label">Имя пользователя</div>
+                <input type="text" class="comment-input" id="userNameInput" placeholder="Ваше имя">
+            </div>
+            <div class="input-group" style="margin-bottom: 16px;">
+                <div class="input-label">Изменить PIN</div>
+                <input type="password" class="comment-input" id="newPinInput" placeholder="Новый PIN (4 цифры)" maxlength="4">
+            </div>
+            <button class="submit-btn" onclick="saveSettings()" style="margin-top: 12px; background: var(--accent-purple); margin-bottom: 16px;">Сохранить настройки</button>
+            <button class="submit-btn" onclick="resetData()" style="background: var(--accent-red);">🗑️ Сбросить все данные</button>
+        </div>
+    </div>
+
+    <!-- Backup Modal -->
+    <div class="modal-overlay" id="backupModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">💾 Резервное копирование</div>
+                <button class="modal-close" onclick="hideModal('backupModal')">✕</button>
+            </div>
+            <button class="submit-btn" onclick="backupData()" style="margin-bottom: 12px; background: var(--accent-green);">Создать резервную копию</button>
+            <button class="submit-btn" onclick="importBackup()" style="background: var(--accent-orange);">Восстановить из копии</button>
+        </div>
+    </div>
+
+    <!-- Easter Egg -->
+    <div class="easter-egg" id="easterEgg">
+        <div class="easter-egg-content">
+            <div class="easter-egg-title">🎉 Ура!</div>
+            <div class="easter-egg-text">Вы нашли секретную пасхалку!<br>Ваш баланс увеличен на 1000 ₽</div>
+            <button class="submit-btn" onclick="closeEasterEgg()" style="background: white; color: black;">Круто! 🚀</button>
+        </div>
+    </div>
+
+    <script>
+        // ========== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ И КОНСТАНТЫ ==========
+        const STORAGE_KEYS = {
+            OPERATIONS: 'finance_operations',
+            LIMITS: 'finance_limits',
+            PIN: 'finance_pin',
+            THEME: 'finance_theme',
+            GOALS: 'finance_goals',
+            SAVINGS: 'finance_savings',
+            USERNAME: 'finance_username',
+            JOIN_DATE: 'finance_join_date'
+        };
+
+        // Категории для расходов и доходов (с алкоголем)
+        const EXPENSE_CATEGORIES = [
+            { id: 1, name: 'Еда', emoji: '🍕', color: '#FF9500' },
+            { id: 2, name: 'Транспорт', emoji: '🚕', color: '#5856D6' },
+            { id: 3, name: 'Кафе', emoji: '☕', color: '#FF3B30' },
+            { id: 4, name: 'Развлечения', emoji: '🎬', color: '#AF52DE' },
+            { id: 5, name: 'Магазины', emoji: '🛍️', color: '#FF9500' },
+            { id: 6, name: 'Здоровье', emoji: '💊', color: '#FF2D55' },
+            { id: 7, name: 'Дом', emoji: '🏠', color: '#34C759' },
+            { id: 8, name: 'Алкоголь', emoji: '🍷', color: '#8E8E93' },
+            { id: 9, name: 'Другое', emoji: '✨', color: '#8E8E93' }
+        ];
+
+        const INCOME_CATEGORIES = [
+            { id: 101, name: 'Зарплата', emoji: '💰', color: '#34C759' },
+            { id: 102, name: 'Фриланс', emoji: '💼', color: '#007AFF' },
+            { id: 103, name: 'Подарок', emoji: '🎁', color: '#FF2D55' },
+            { id: 104, name: 'Инвестиции', emoji: '📈', color: '#FF9500' },
+            { id: 105, name: 'Возврат', emoji: '↩️', color: '#AF52DE' },
+            { id: 106, name: 'Другое', emoji: '✨', color: '#8E8E93' }
+        ];
+
+        let transactions = [];
+        let limits = {};
+        let goals = [];
+        let savings = 0;
+        let pinCode = '0000';
+        let currentTheme = 'light';
+        let transactionType = 'expense';
+        let selectedCategory = null;
+        let titleClickCount = 0;
+        let userName = 'Финансовый гений';
+        let joinDate = new Date();
+        let analyticsPeriod = 'month';
+
+        // ========== ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            initPinScreen();
+            loadAllData();
+            initEventListeners();
+            
+            setTimeout(() => {
+                document.getElementById('loading').classList.add('hidden');
+            }, 800);
+        });
+
+        // ========== PIN СИСТЕМА ==========
+        function initPinScreen() {
+            const savedPin = localStorage.getItem(STORAGE_KEYS.PIN);
+            pinCode = savedPin || '0000';
+            if (!savedPin) {
+                localStorage.setItem(STORAGE_KEYS.PIN, pinCode);
+            }
+
+            const pinKeypad = document.getElementById('pinKeypad');
+            const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, '⌫', 0, '✓'];
+            
+            numbers.forEach(value => {
+                const key = document.createElement('div');
+                key.className = 'pin-key';
+                key.textContent = value;
+                
+                if (value === '⌫') {
+                    key.classList.add('delete');
+                    key.onclick = deletePinDigit;
+                } else if (value === '✓') {
+                    key.style.background = 'var(--accent-blue)';
+                    key.style.color = 'white';
+                    key.onclick = submitPin;
+                } else {
+                    key.onclick = () => addPinDigit(value);
+                }
+                
+                pinKeypad.appendChild(key);
+            });
+        }
+
+        let currentPin = '';
+        function addPinDigit(digit) {
+            if (currentPin.length < 4) {
+                currentPin += digit;
+                updatePinDisplay();
+            }
+        }
+
+        function deletePinDigit() {
+            if (currentPin.length > 0) {
+                currentPin = currentPin.slice(0, -1);
+                updatePinDisplay();
+            }
+        }
+
+        function updatePinDisplay() {
+            const dots = document.querySelectorAll('.pin-dot');
+            dots.forEach((dot, index) => {
+                if (index < currentPin.length) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+
+        function submitPin() {
+            if (currentPin.length !== 4) return;
+            
+            if (currentPin === pinCode) {
+                document.getElementById('pinScreen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('pinScreen').style.display = 'none';
+                    document.getElementById('mainContent').style.display = 'block';
+                    updateUI();
+                }, 300);
+            } else {
+                currentPin = '';
+                updatePinDisplay();
+                document.getElementById('pinScreen').classList.add('shake');
+                setTimeout(() => {
+                    document.getElementById('pinScreen').classList.remove('shake');
+                }, 500);
+            }
+        }
+
+        // ========== ТЕМЫ И НАВИГАЦИЯ ==========
+        function setTheme(theme) {
+            currentTheme = theme;
+            document.body.className = theme;
+            localStorage.setItem(STORAGE_KEYS.THEME, theme);
+            
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`.theme-btn.${theme}`).classList.add('active');
+        }
+
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show selected page
+            document.getElementById(pageId + 'Page').classList.add('active');
+            
+            // Update navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Update bottom nav
+            if (pageId === 'home') {
+                document.querySelectorAll('.nav-item')[0].classList.add('active');
+            } else if (pageId === 'analytics') {
+                document.querySelectorAll('.nav-item')[1].classList.add('active');
+            } else if (pageId === 'goals') {
+                document.querySelectorAll('.nav-item')[3].classList.add('active');
+            } else if (pageId === 'profile') {
+                document.querySelectorAll('.nav-item')[4].classList.add('active');
+            }
+            
+            // Update analytics if needed
+            if (pageId === 'analytics') {
+                updateAnalytics();
+            } else if (pageId === 'profile') {
+                updateProfile();
+            }
+            
+            // Hide any open modals
+            hideAllModals();
+        }
+
+        function hideAllModals() {
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.style.display = 'none';
+            });
+        }
+
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function hideModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // ========== КАТЕГОРИИ ==========
+        function showCategories() {
+            const amountInput = document.getElementById('amountInput');
+            const amount = parseFloat(amountInput.value);
+            
+            if (!amount || amount <= 0) {
+                document.getElementById('categoryContainer').classList.remove('visible');
+                return;
+            }
+            
+            document.getElementById('categoryContainer').classList.add('visible');
+            
+            const categories = transactionType === 'expense' ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
+            const container = document.getElementById('categoryGrid');
+            container.innerHTML = '';
+            
+            categories.forEach(category => {
+                const option = document.createElement('div');
+                option.className = 'category-option';
+                if (selectedCategory === category.id) option.classList.add('active');
+                option.innerHTML = `
+                    <div class="category-emoji">${category.emoji}</div>
+                    <div class="category-name">${category.name}</div>
+                `;
+                option.onclick = () => {
+                    document.querySelectorAll('.category-option').forEach(opt => {
+                        opt.classList.remove('active');
+                    });
+                    option.classList.add('active');
+                    selectedCategory = category.id;
+                };
+                container.appendChild(option);
+            });
+            
+            if (!selectedCategory && categories.length > 0) {
+                selectedCategory = categories[0].id;
+                container.querySelector('.category-option').classList.add('active');
+            }
+        }
+
+        // ========== ОПЕРАЦИИ ==========
+        function setTransactionType(type) {
+            transactionType = type;
+            selectedCategory = null;
+            
+            document.querySelectorAll('.type-toggle').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            const amountInput = document.getElementById('amountInput');
+            if (amountInput.value && parseFloat(amountInput.value) > 0) {
+                showCategories();
+            } else {
+                document.getElementById('categoryContainer').classList.remove('visible');
+            }
+        }
+
+        function addTransaction() {
+            const amountInput = document.getElementById('amountInput');
+            const commentInput = document.getElementById('commentInput');
+            
+            const amount = parseFloat(amountInput.value);
+            const comment = commentInput.value.trim();
+            
+            if (!amount || amount <= 0) {
+                alert('Введите сумму операции');
+                amountInput.focus();
+                return;
+            }
+            
+            if (!selectedCategory) {
+                alert('Выберите категорию');
+                return;
+            }
+            
+            const transaction = {
+                id: Date.now(),
+                type: transactionType,
+                amount: amount,
+                categoryId: selectedCategory,
+                comment: comment,
+                date: new Date().toISOString()
+            };
+            
+            transactions.unshift(transaction);
+            saveData();
+            updateUI();
+            
+            amountInput.value = '';
+            commentInput.value = '';
+            selectedCategory = null;
+            document.getElementById('categoryContainer').classList.remove('visible');
+            document.querySelectorAll('.category-option').forEach(opt => {
+                opt.classList.remove('active');
+            });
+            
+            const btn = document.querySelector('.submit-btn');
+            btn.style.animation = 'pulse 0.3s';
+            setTimeout(() => btn.style.animation = '', 300);
+            
+            checkLimits(transaction);
+        }
+
+        function deleteTransaction(id) {
+            const transaction = transactions.find(t => t.id === id);
+            if (!transaction) return;
+            
+            const item = document.querySelector(`[data-id="${id}"]`);
+            if (item) {
+                item.classList.add('deleting');
+                setTimeout(() => {
+                    transactions = transactions.filter(t => t.id !== id);
+                    saveData();
+                    updateUI();
+                }, 300);
+            }
+        }
+
+        // ========== СБЕРЕЖЕНИЯ ==========
+        function saveMoney() {
+            const amountInput = document.getElementById('saveAmount');
+            const commentInput = document.getElementById('saveComment');
+            
+            const amount = parseFloat(amountInput.value);
+            const comment = commentInput.value.trim();
+            
+            if (!amount || amount <= 0) {
+                alert('Введите сумму для отложения');
+                return;
+            }
+            
+            // Проверяем, достаточно ли средств на балансе
+            const balance = calculateBalance();
+            if (amount > balance) {
+                alert('Недостаточно средств на балансе');
+                return;
+            }
+            
+            // Добавляем операцию расхода
+            const transaction = {
+                id: Date.now(),
+                type: 'expense',
+                amount: amount,
+                categoryId: 9, // "Другое" для сбережений
+                comment: 'Отложено: ' + (comment || 'Сбережения'),
+                date: new Date().toISOString()
+            };
+            
+            transactions.unshift(transaction);
+            savings += amount;
+            localStorage.setItem(STORAGE_KEYS.SAVINGS, savings);
+            saveData();
+            updateUI();
+            
+            amountInput.value = '';
+            commentInput.value = '';
+            hideModal('saveModal');
+            
+            showNotification(`✅ Отложено ${amount} ₽`);
+        }
+
+        function takeMoney() {
+            const amountInput = document.getElementById('takeAmount');
+            const commentInput = document.getElementById('takeComment');
+            
+            const amount = parseFloat(amountInput.value);
+            const comment = commentInput.value.trim();
+            
+            if (!amount || amount <= 0) {
+                alert('Введите сумму для снятия');
+                return;
+            }
+            
+            if (amount > savings) {
+                alert('Недостаточно средств в сбережениях');
+                return;
+            }
+            
+            // Добавляем операцию дохода
+            const transaction = {
+                id: Date.now(),
+                type: 'income',
+                amount: amount,
+                categoryId: 106, // "Другое" в доходах
+                comment: 'Взято из сбережений: ' + (comment || 'На нужды'),
+                date: new Date().toISOString()
+            };
+            
+            transactions.unshift(transaction);
+            savings -= amount;
+            localStorage.setItem(STORAGE_KEYS.SAVINGS, savings);
+            saveData();
+            updateUI();
+            
+            amountInput.value = '';
+            commentInput.value = '';
+            hideModal('takeModal');
+            
+            showNotification(`✅ Взято ${amount} ₽ из сбережений`);
+        }
+
+        // ========== ЦЕЛИ ==========
+        function addGoal() {
+            const nameInput = document.getElementById('goalName');
+            const amountInput = document.getElementById('goalAmount');
+            const emojiInput = document.getElementById('goalEmoji');
+            
+            const name = nameInput.value.trim();
+            const amount = parseFloat(amountInput.value);
+            const emoji = emojiInput.value.trim() || '🎯';
+            
+            if (!name) {
+                alert('Введите название цели');
+                return;
+            }
+            
+            if (!amount || amount < 100) {
+                alert('Введите сумму цели (минимум 100 ₽)');
+                return;
+            }
+            
+            const goal = {
+                id: Date.now(),
+                name: name,
+                targetAmount: amount,
+                savedAmount: 0,
+                emoji: emoji,
+                created: new Date().toISOString()
+            };
+            
+            goals.push(goal);
+            localStorage.setItem(STORAGE_KEYS.GOALS, JSON.stringify(goals));
+            
+            nameInput.value = '';
+            amountInput.value = '';
+            emojiInput.value = '';
+            hideModal('goalModal');
+            updateGoals();
+            
+            showNotification(`🎯 Цель "${name}" добавлена!`);
+        }
+
+        function updateGoals() {
+            const container = document.getElementById('goalsList');
+            container.innerHTML = '';
+            
+            if (goals.length === 0) {
+                container.innerHTML = `
+                    <div class="goal-card" style="text-align: center; padding: 40px;">
+                        <div style="font-size: 48px; margin-bottom: 16px;">🎯</div>
+                        <div style="font-weight: 600; margin-bottom: 8px;">Нет целей</div>
+                        <div style="color: var(--text-tertiary);">Добавьте первую цель</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            goals.forEach(goal => {
+                const percentage = Math.min((goal.savedAmount / goal.targetAmount) * 100, 100);
+                const remaining = goal.targetAmount - goal.savedAmount;
+                
+                const card = document.createElement('div');
+                card.className = 'goal-card';
+                card.innerHTML = `
+                    <div class="goal-header">
+                        <div class="goal-title">
+                            <span class="goal-emoji">${goal.emoji}</span>
+                            <span>${goal.name}</span>
+                        </div>
+                        <div class="goal-amount">${goal.savedAmount.toFixed(0)} / ${goal.targetAmount} ₽</div>
+                    </div>
+                    <div class="goal-progress">
+                        <div class="goal-progress-bar" style="width: ${percentage}%"></div>
+                    </div>
+                    <div class="goal-stats">
+                        <span>${percentage.toFixed(0)}% выполнено</span>
+                        <span class="goal-remaining">Осталось: ${remaining.toFixed(0)} ₽</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // ========== ЛИМИТЫ ==========
+        function showLimitsModal() {
+            const form = document.getElementById('limitsForm');
+            form.innerHTML = '';
+            
+            EXPENSE_CATEGORIES.forEach(category => {
+                const limit = limits[category.id] || '';
+                const spent = calculateCategorySpending(category.id);
+                const remaining = limit ? Math.max(limit - spent, 0) : 0;
+                
+                const div = document.createElement('div');
+                div.className = 'input-group';
+                div.style.marginBottom = '20px';
+                div.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                        <span style="font-size: 20px;">${category.emoji}</span>
+                        <span style="font-weight: 600;">${category.name}</span>
+                    </div>
+                    <input type="number" 
+                           class="comment-input" 
+                           id="limit_${category.id}"
+                           value="${limit}"
+                           placeholder="Без лимита"
+                           step="100"
+                           min="0"
+                           style="margin-bottom: 8px;">
+                    ${limit ? `
+                        <div style="font-size: 13px; color: var(--text-tertiary);">
+                            Потрачено: ${spent.toFixed(0)} ₽ | 
+                            Осталось: <span style="color: var(--accent-green); font-weight: 600;">${remaining.toFixed(0)} ₽</span>
+                        </div>
+                    ` : ''}
+                `;
+                form.appendChild(div);
+            });
+            
+            showModal('limitsModal');
+        }
+
+        function saveLimits() {
+            EXPENSE_CATEGORIES.forEach(category => {
+                const input = document.getElementById(`limit_${category.id}`);
+                const value = parseFloat(input.value);
+                if (value && value > 0) {
+                    limits[category.id] = value;
+                } else {
+                    delete limits[category.id];
+                }
+            });
+            
+            localStorage.setItem(STORAGE_KEYS.LIMITS, JSON.stringify(limits));
+            hideModal('limitsModal');
+            updateLimitsUI();
+            showNotification('✅ Лимиты сохранены');
+        }
+
+        function calculateCategorySpending(categoryId) {
+            const now = new Date();
+            return transactions
+                .filter(t => {
+                    const date = new Date(t.date);
+                    return t.type === 'expense' && 
+                           t.categoryId === categoryId &&
+                           date.getMonth() === now.getMonth() &&
+                           date.getFullYear() === now.getFullYear();
+                })
+                .reduce((sum, t) => sum + t.amount, 0);
+        }
+
+        function checkLimits(transaction) {
+            if (transaction.type !== 'expense') return;
+            
+            const limit = limits[transaction.categoryId];
+            if (!limit) return;
+            
+            const spent = calculateCategorySpending(transaction.categoryId);
+            
+            if (spent > limit) {
+                showNotification(`⚠️ Превышен лимит по категории "${getCategoryName(transaction.categoryId)}"`);
+            } else if (spent > limit * 0.8) {
+                showNotification(`⚠️ Близко к лимиту по категории "${getCategoryName(transaction.categoryId)}"`);
+            }
+        }
+
+        function updateLimitsUI() {
+            const container = document.getElementById('limitsList');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            Object.entries(limits).forEach(([categoryId, limit]) => {
+                const category = EXPENSE_CATEGORIES.find(c => c.id == categoryId);
+                if (!category) return;
+                
+                const spent = calculateCategorySpending(categoryId);
+                const percent = Math.min((spent / limit) * 100, 100);
+                const remaining = Math.max(limit - spent, 0);
+                
+                let barClass = 'limit-bar';
+                if (percent > 90) barClass += ' danger';
+                else if (percent > 70) barClass += ' warning';
+                
+                const item = document.createElement('div');
+                item.className = 'limit-item';
+                item.innerHTML = `
+                    <div class="limit-header">
+                        <div class="limit-title">
+                            <span class="limit-emoji">${category.emoji}</span>
+                            <span>${category.name}</span>
+                        </div>
+                        <div class="limit-amount">${spent.toFixed(0)} / ${limit} ₽</div>
+                    </div>
+                    <div class="limit-progress">
+                        <div class="${barClass}" style="width: ${percent}%"></div>
+                    </div>
+                    <div class="limit-stats">
+                        <span>${percent.toFixed(0)}% использовано</span>
+                        <span class="limit-remaining">Можно потратить: ${remaining.toFixed(0)} ₽</span>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+            
+            if (Object.keys(limits).length === 0) {
+                container.innerHTML = `
+                    <div class="limit-item" style="text-align: center; padding: 40px;">
+                        <div style="font-size: 48px; margin-bottom: 16px;">⚡</div>
+                        <div style="font-weight: 600; margin-bottom: 8px;">Лимиты не установлены</div>
+                        <div style="color: var(--text-tertiary);">Настройте лимиты для контроля расходов</div>
+                    </div>
+                `;
+            }
+        }
+
+        // ========== АНАЛИТИКА ==========
+        function setAnalyticsPeriod(period) {
+            analyticsPeriod = period;
+            
+            document.querySelectorAll('#analyticsPage .type-toggle').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            updateAnalytics();
+        }
+
+        function updateAnalytics() {
+            updateAnalyticsChart();
+            updateAnalyticsStats();
+            updateCategoryStats();
+        }
+
+        function updateAnalyticsChart() {
+            const container = document.getElementById('analyticsChart');
+            container.innerHTML = '';
+            
+            const categories = EXPENSE_CATEGORIES;
+            const categorySpending = {};
+            
+            // Рассчитываем расходы по категориям за выбранный период
+            const now = new Date();
+            let startDate = new Date();
+            
+            if (analyticsPeriod === 'week') {
+                startDate.setDate(now.getDate() - 7);
+            } else if (analyticsPeriod === 'month') {
+                startDate.setMonth(now.getMonth() - 1);
+            } else if (analyticsPeriod === 'year') {
+                startDate.setFullYear(now.getFullYear() - 1);
+            }
+            
+            transactions.forEach(t => {
+                const date = new Date(t.date);
+                if (t.type === 'expense' && date >= startDate) {
+                    categorySpending[t.categoryId] = (categorySpending[t.categoryId] || 0) + t.amount;
+                }
+            });
+            
+            // Находим максимальное значение для масштабирования
+            const maxSpending = Math.max(...Object.values(categorySpending), 1);
+            
+            // Создаем столбцы для каждой категории
+            categories.forEach(category => {
+                const spending = categorySpending[category.id] || 0;
+                const height = (spending / maxSpending) * 150;
+                
+                if (spending > 0) {
+                    const bar = document.createElement('div');
+                    bar.className = 'chart-bar';
+                    bar.style.height = height + 'px';
+                    bar.style.background = `linear-gradient(to top, ${category.color}, ${category.color}99)`;
+                    
+                    const label = document.createElement('div');
+                    label.className = 'chart-label';
+                    label.textContent = category.emoji;
+                    
+                    bar.appendChild(label);
+                    container.appendChild(bar);
+                }
+            });
+        }
+
+        function updateAnalyticsStats() {
+            const now = new Date();
+            let startDate = new Date();
+            
+            if (analyticsPeriod === 'week') {
+                startDate.setDate(now.getDate() - 7);
+            } else if (analyticsPeriod === 'month') {
+                startDate.setMonth(now.getMonth() - 1);
+            } else if (analyticsPeriod === 'year') {
+                startDate.setFullYear(now.getFullYear() - 1);
+            }
+            
+            const periodTransactions = transactions.filter(t => {
+                const date = new Date(t.date);
+                return date >= startDate && t.type === 'expense';
+            });
+            
+            const totalExpenses = periodTransactions.reduce((sum, t) => sum + t.amount, 0);
+            const avgExpense = periodTransactions.length > 0 ? totalExpenses / periodTransactions.length : 0;
+            const biggestExpense = periodTransactions.length > 0 ? Math.max(...periodTransactions.map(t => t.amount)) : 0;
+            
+            document.getElementById('totalExpenses').textContent = totalExpenses.toFixed(0) + ' ₽';
+            document.getElementById('avgExpense').textContent = avgExpense.toFixed(0) + ' ₽';
+            document.getElementById('biggestExpense').textContent = biggestExpense.toFixed(0) + ' ₽';
+            document.getElementById('expenseCount').textContent = periodTransactions.length;
+        }
+
+        function updateCategoryStats() {
+            const container = document.getElementById('categoryStats');
+            container.innerHTML = '';
+            
+            const now = new Date();
+            let startDate = new Date();
+            
+            if (analyticsPeriod === 'week') {
+                startDate.setDate(now.getDate() - 7);
+            } else if (analyticsPeriod === 'month') {
+                startDate.setMonth(now.getMonth() - 1);
+            } else if (analyticsPeriod === 'year') {
+                startDate.setFullYear(now.getFullYear() - 1);
+            }
+            
+            const categorySpending = {};
+            let totalSpending = 0;
+            
+            transactions.forEach(t => {
+                const date = new Date(t.date);
+                if (t.type === 'expense' && date >= startDate) {
+                    categorySpending[t.categoryId] = (categorySpending[t.categoryId] || 0) + t.amount;
+                    totalSpending += t.amount;
+                }
+            });
+            
+            // Сортируем по убыванию расходов
+            const sortedCategories = EXPENSE_CATEGORIES
+                .map(category => ({
+                    ...category,
+                    spending: categorySpending[category.id] || 0,
+                    percentage: totalSpending > 0 ? ((categorySpending[category.id] || 0) / totalSpending) * 100 : 0
+                }))
+                .sort((a, b) => b.spending - a.spending)
+                .slice(0, 5); // Показываем топ-5 категорий
+            
+            sortedCategories.forEach(category => {
+                if (category.spending > 0) {
+                    const stat = document.createElement('div');
+                    stat.className = 'category-stat';
+                    stat.innerHTML = `
+                        <div class="category-info">
+                            <span class="category-stat-emoji">${category.emoji}</span>
+                            <span>${category.name}</span>
+                        </div>
+                        <div class="category-percentage">${category.percentage.toFixed(1)}%</div>
+                    `;
+                    container.appendChild(stat);
+                }
+            });
+            
+            if (sortedCategories.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--text-tertiary);">
+                        Нет данных за выбранный период
+                    </div>
+                `;
+            }
+        }
+
+        // ========== ПРОФИЛЬ ==========
+        function updateProfile() {
+            document.getElementById('userName').textContent = userName;
+            document.getElementById('userNameInput').value = userName;
+            
+            const totalOps = transactions.length;
+            const daysActive = Math.max(1, Math.floor((new Date() - new Date(joinDate)) / (1000 * 60 * 60 * 24)));
+            
+            const totalIncome = transactions
+                .filter(t => t.type === 'income')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            const savingsRate = totalIncome > 0 ? (savings / totalIncome) * 100 : 0;
+            
+            const totalGoalTarget = goals.reduce((sum, goal) => sum + goal.targetAmount, 0);
+            const totalGoalSaved = goals.reduce((sum, goal) => sum + goal.savedAmount, 0);
+            const goalProgress = totalGoalTarget > 0 ? (totalGoalSaved / totalGoalTarget) * 100 : 0;
+            
+            document.getElementById('profileTotalOps').textContent = totalOps;
+            document.getElementById('profileDaysActive').textContent = daysActive;
+            document.getElementById('profileSavingsRate').textContent = savingsRate.toFixed(1) + '%';
+            document.getElementById('profileGoalProgress').textContent = goalProgress.toFixed(1) + '%';
+        }
+
+        function saveSettings() {
+            const nameInput = document.getElementById('userNameInput');
+            const pinInput = document.getElementById('newPinInput');
+            
+            const newName = nameInput.value.trim();
+            const newPin = pinInput.value;
+            
+            if (newName) {
+                userName = newName;
+                localStorage.setItem(STORAGE_KEYS.USERNAME, userName);
+            }
+            
+            if (newPin && newPin.length === 4 && /^\d{4}$/.test(newPin)) {
+                pinCode = newPin;
+                localStorage.setItem(STORAGE_KEYS.PIN, pinCode);
+                pinInput.value = '';
+            }
+            
+            hideModal('settingsModal');
+            updateProfile();
+            showNotification('✅ Настройки сохранены');
+        }
+
+        // ========== ОБНОВЛЕНИЕ ИНТЕРФЕЙСА ==========
+        function calculateBalance() {
+            return transactions.reduce((sum, t) => {
+                return t.type === 'income' ? sum + t.amount : sum - t.amount;
+            }, 0);
+        }
+
+        function updateUI() {
+            const balance = calculateBalance();
+            const income = transactions
+                .filter(t => t.type === 'income')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            const expense = transactions
+                .filter(t => t.type === 'expense')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            document.getElementById('balanceAmount').textContent = balance.toFixed(2) + ' ₽';
+            document.getElementById('incomeTotal').textContent = income.toFixed(2) + ' ₽';
+            document.getElementById('expenseTotal').textContent = expense.toFixed(2) + ' ₽';
+            document.getElementById('savingsAmount').textContent = savings.toFixed(2) + ' ₽';
+            
+            updateTransactions();
+            updateGoals();
+            updateLimitsUI();
+            checkMotivation();
+        }
+
+        function updateTransactions() {
+            const container = document.getElementById('transactionsList');
+            container.innerHTML = '';
+            
+            if (transactions.length === 0) {
+                container.innerHTML = `
+                    <div class="transaction-item" style="text-align: center; padding: 40px;">
+                        <div style="font-size: 48px; margin-bottom: 16px;">💸</div>
+                        <div style="font-weight: 600; margin-bottom: 8px;">Нет операций</div>
+                        <div style="color: var(--text-tertiary);">Добавьте первую операцию</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            transactions.slice(0, 5).forEach(transaction => {
+                const categories = transaction.type === 'expense' ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
+                const category = categories.find(c => c.id === transaction.categoryId);
+                const item = document.createElement('div');
+                item.className = 'transaction-item';
+                item.dataset.id = transaction.id;
+                item.onclick = () => showTransactionDetails(transaction.id);
+                
+                const date = new Date(transaction.date);
+                const timeString = date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+                const dateString = date.toLocaleDateString('ru-RU');
+                
+                item.innerHTML = `
+                    <div class="transaction-icon">${category?.emoji || '💰'}</div>
+                    <div class="transaction-info">
+                        <div class="transaction-category">${category?.name || 'Другое'}</div>
+                        <div class="transaction-comment">${transaction.comment || 'Без комментария'}</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="transaction-amount ${transaction.type}">
+                            ${transaction.type === 'income' ? '+' : '-'}${transaction.amount.toFixed(2)} ₽
+                        </div>
+                        <div class="transaction-date">${dateString} ${timeString}</div>
+                    </div>
+                `;
+                
+                item.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    if (confirm('Удалить эту операцию?')) {
+                        deleteTransaction(transaction.id);
+                    }
+                });
+                
+                container.appendChild(item);
+            });
+        }
+
+        function showTransactionDetails(id) {
+            const transaction = transactions.find(t => t.id === id);
+            if (!transaction) return;
+            
+            const categories = transaction.type === 'expense' ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
+            const category = categories.find(c => c.id === transaction.categoryId);
+            const date = new Date(transaction.date);
+            const dateString = date.toLocaleString('ru-RU');
+            
+            alert(`Детали операции:\n\n` +
+                  `Категория: ${category?.name || 'Другое'} ${category?.emoji || ''}\n` +
+                  `Тип: ${transaction.type === 'income' ? 'Доход' : 'Расход'}\n` +
+                  `Сумма: ${transaction.amount.toFixed(2)} ₽\n` +
+                  `Комментарий: ${transaction.comment || 'Нет'}\n` +
+                  `Дата: ${dateString}\n\n` +
+                  `Удерживайте для удаления`);
+        }
+
+        function showAllTransactions() {
+            if (transactions.length === 0) {
+                alert('Нет операций для отображения');
+                return;
+            }
+            
+            let message = 'Все операции:\n\n';
+            transactions.forEach((t, index) => {
+                const categories = t.type === 'expense' ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
+                const category = categories.find(c => c.id === t.categoryId);
+                const date = new Date(t.date);
+                const dateStr = date.toLocaleDateString('ru-RU');
+                
+                message += `${index + 1}. ${dateStr} - ${category?.name || 'Другое'} ` +
+                          `${t.type === 'income' ? '+' : '-'}${t.amount.toFixed(2)} ₽\n` +
+                          `   ${t.comment || ''}\n\n`;
+            });
+            
+            alert(message);
+        }
+
+        // ========== УТИЛИТЫ ==========
+        function getCategoryName(id) {
+            let category = EXPENSE_CATEGORIES.find(c => c.id == id);
+            if (category) return category.name;
+            
+            category = INCOME_CATEGORIES.find(c => c.id == id);
+            return category ? category.name : 'Другое';
+        }
+
+        function showNotification(text) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: var(--bg-card);
+                color: var(--text-primary);
+                padding: 14px 24px;
+                border-radius: var(--radius-medium);
+                box-shadow: var(--shadow);
+                z-index: 9999;
+                animation: slideUp 0.3s ease-out;
+                border-left: 4px solid var(--accent-orange);
+                max-width: 90%;
+                text-align: center;
+                font-weight: 500;
+            `;
+            notification.textContent = text;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        function checkMotivation() {
+            const balance = calculateBalance();
+            const monthExpense = transactions
+                .filter(t => {
+                    const date = new Date(t.date);
+                    const now = new Date();
+                    return t.type === 'expense' &&
+                           date.getMonth() === now.getMonth() &&
+                           date.getFullYear() === now.getFullYear();
+                })
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            if (balance > 50000) {
+                showNotification('🚀 Отличная работа! Вы накопили более 50,000 ₽');
+            } else if (monthExpense < 10000 && balance > 0) {
+                showNotification('👍 Хороший месяц! Вы экономно тратите');
+            } else if (savings > 10000) {
+                showNotification('💰 Отличные сбережения! Продолжайте в том же духе');
+            }
+        }
+
+        // ========== ПАСХАЛКА ==========
+        function handleTitleClick() {
+            titleClickCount++;
+            
+            if (titleClickCount === 3) {
+                showNotification('👀 Продолжайте нажимать...');
+            } else if (titleClickCount === 7) {
+                activateEasterEgg();
+                titleClickCount = 0;
+            }
+        }
+
+        function activateEasterEgg() {
+            const egg = document.getElementById('easterEgg');
+            egg.style.display = 'flex';
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.cssText = `
+                    position: fixed;
+                    top: -10px;
+                    left: ${Math.random() * 100}%;
+                    width: ${Math.random() * 10 + 5}px;
+                    height: ${Math.random() * 10 + 5}px;
+                    background: hsl(${Math.random() * 360}, 100%, 50%);
+                    border-radius: ${Math.random() > 0.5 ? '50%' : '0'};
+                    animation: confetti ${Math.random() * 2 + 1}s linear forwards;
+                    z-index: 3001;
+                `;
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 3000);
+            }
+            
+            const bonus = {
+                id: Date.now(),
+                type: 'income',
+                amount: 1000,
+                categoryId: 106,
+                comment: 'Секретный бонус за находчивость! 🎉',
+                date: new Date().toISOString()
+            };
+            transactions.unshift(bonus);
+            saveData();
+            updateUI();
+        }
+
+        function closeEasterEgg() {
+            document.getElementById('easterEgg').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('easterEgg').style.display = 'none';
+                document.getElementById('easterEgg').style.opacity = '1';
+            }, 300);
+        }
+
+        // ========== ЭКСПОРТ И ИМПОРТ ==========
+        function exportToCSV() {
+            if (transactions.length === 0) {
+                alert('Нет данных для экспорта');
+                return;
+            }
+            
+            let csv = 'Дата,Тип,Категория,Сумма,Комментарий\n';
+            
+            transactions.forEach(t => {
+                const date = new Date(t.date);
+                const categories = t.type === 'expense' ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
+                const category = categories.find(c => c.id === t.categoryId);
+                csv += `"${date.toLocaleString('ru-RU')}",`;
+                csv += `"${t.type === 'income' ? 'Доход' : 'Расход'}",`;
+                csv += `"${category?.name || 'Другое'}",`;
+                csv += `"${t.amount}",`;
+                csv += `"${(t.comment || '').replace(/"/g, '""')}"\n`;
+            });
+            
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `финансы_${new Date().toISOString().slice(0,10)}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function backupData() {
+            const data = {
+                transactions: transactions,
+                limits: limits,
+                goals: goals,
+                savings: savings,
+                userName: userName,
+                joinDate: joinDate,
+                backupDate: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `финансы_резервная_копия_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showNotification('✅ Резервная копия создана');
+        }
+
+        function importBackup() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        if (data.transactions && Array.isArray(data.transactions)) {
+                            if (confirm('Заменить текущие данные резервной копией?')) {
+                                transactions = data.transactions;
+                                if (data.limits) limits = data.limits;
+                                if (data.goals) goals = data.goals;
+                                if (data.savings) savings = data.savings;
+                                if (data.userName) userName = data.userName;
+                                if (data.joinDate) joinDate = data.joinDate;
+                                
+                                saveAllData();
+                                updateUI();
+                                updateProfile();
+                                showNotification('✅ Данные восстановлены из резервной копии');
+                            }
+                        }
+                    } catch (err) {
+                        alert('Ошибка при чтении файла резервной копии');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function resetData() {
+            if (confirm('ВНИМАНИЕ!\n\nЭто действие удалит ВСЕ ваши данные без возможности восстановления.\n\nВы уверены?')) {
+                transactions = [];
+                limits = {};
+                goals = [];
+                savings = 0;
+                
+                localStorage.removeItem(STORAGE_KEYS.OPERATIONS);
+                localStorage.removeItem(STORAGE_KEYS.LIMITS);
+                localStorage.removeItem(STORAGE_KEYS.GOALS);
+                localStorage.removeItem(STORAGE_KEYS.SAVINGS);
+                
+                updateUI();
+                showNotification('✅ Все данные сброшены');
+                hideModal('settingsModal');
+            }
+        }
+
+        // ========== СОХРАНЕНИЕ И ЗАГРУЗКА ==========
+        function saveData() {
+            localStorage.setItem(STORAGE_KEYS.OPERATIONS, JSON.stringify(transactions));
+        }
+
+        function saveAllData() {
+            saveData();
+            localStorage.setItem(STORAGE_KEYS.LIMITS, JSON.stringify(limits));
+            localStorage.setItem(STORAGE_KEYS.GOALS, JSON.stringify(goals));
+            localStorage.setItem(STORAGE_KEYS.SAVINGS, savings);
+            localStorage.setItem(STORAGE_KEYS.USERNAME, userName);
+            localStorage.setItem(STORAGE_KEYS.JOIN_DATE, joinDate);
+        }
+
+        function loadAllData() {
+            // Загружаем транзакции
+            const savedTransactions = localStorage.getItem(STORAGE_KEYS.OPERATIONS);
+            if (savedTransactions) {
+                transactions = JSON.parse(savedTransactions);
+            }
+            
+            // Загружаем лимиты
+            const savedLimits = localStorage.getItem(STORAGE_KEYS.LIMITS);
+            if (savedLimits) {
+                limits = JSON.parse(savedLimits);
+            }
+            
+            // Загружаем цели
+            const savedGoals = localStorage.getItem(STORAGE_KEYS.GOALS);
+            if (savedGoals) {
+                goals = JSON.parse(savedGoals);
+            }
+            
+            // Загружаем сбережения
+            const savedSavings = localStorage.getItem(STORAGE_KEYS.SAVINGS);
+            if (savedSavings) {
+                savings = parseFloat(savedSavings);
+            }
+            
+            // Загружаем имя пользователя
+            const savedUsername = localStorage.getItem(STORAGE_KEYS.USERNAME);
+            if (savedUsername) {
+                userName = savedUsername;
+            }
+            
+            // Загружаем дату регистрации
+            const savedJoinDate = localStorage.getItem(STORAGE_KEYS.JOIN_DATE);
+            if (savedJoinDate) {
+                joinDate = new Date(savedJoinDate);
+            } else {
+                joinDate = new Date();
+                localStorage.setItem(STORAGE_KEYS.JOIN_DATE, joinDate);
+            }
+            
+            // Загружаем тему
+            const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME);
+            if (savedTheme) {
+                setTheme(savedTheme);
+            }
+        }
+
+        // ========== ИНИЦИАЛИЗАЦИЯ СОБЫТИЙ ==========
+        function initEventListeners() {
+            // Закрытие модалок по клику на оверлей
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Обработка ввода суммы
+            const amountInput = document.getElementById('amountInput');
+            amountInput.addEventListener('input', showCategories);
+            amountInput.addEventListener('blur', showCategories);
+            
+            // Обработка нажатия Enter в поле суммы
+            amountInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    addTransaction();
+                }
+            });
+            
+            // Свайп для удаления транзакций
+            let startX = 0;
+            document.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+            });
+            
+            document.addEventListener('touchend', (e) => {
+                const endX = e.changedTouches[0].clientX;
+                const diff = startX - endX;
+                
+                if (Math.abs(diff) > 100) {
+                    const item = e.target.closest('.transaction-item');
+                    if (item) {
+                        const id = parseInt(item.dataset.id);
+                        if (confirm('Удалить эту операцию?')) {
+                            deleteTransaction(id);
+                        }
+                    }
+                }
+            });
+        }
+
+        // ========== ЗАГРУЗКА ЗАВЕРШЕНА ==========
+        setTimeout(() => {
+            if (transactions.length === 0) {
+                showNotification('👋 Добро пожаловать!\n\nНачните вести учет финансов с первой операции.');
+            }
+        }, 1500);
+    </script>
+</body>
+</html>
