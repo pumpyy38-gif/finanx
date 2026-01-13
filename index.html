@@ -456,7 +456,7 @@
             background: var(--border-light);
             border-radius: 4px;
             overflow: hidden;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
         }
 
         .goal-progress-bar {
@@ -476,6 +476,29 @@
         .goal-remaining {
             color: var(--accent-red);
             font-weight: 600;
+        }
+
+        .goal-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .goal-add-btn {
+            flex: 1;
+            padding: 8px 12px;
+            background: var(--accent-green);
+            border: none;
+            border-radius: var(--radius-small);
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .goal-add-btn:active {
+            transform: scale(0.95);
         }
 
         /* ====== Add Transaction Form ====== */
@@ -730,83 +753,6 @@
             font-size: 12px;
             color: var(--text-tertiary);
             text-align: right;
-        }
-
-        /* ====== Limits Section ====== */
-        .limits-section {
-            margin-bottom: 24px;
-        }
-
-        .limits-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .limit-item {
-            background: var(--bg-card);
-            border-radius: var(--radius-medium);
-            padding: 20px;
-            box-shadow: var(--shadow);
-            animation: slideUp 0.4s ease-out;
-        }
-
-        .limit-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .limit-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 600;
-        }
-
-        .limit-emoji {
-            font-size: 20px;
-        }
-
-        .limit-amount {
-            font-weight: 700;
-            font-variant-numeric: tabular-nums;
-        }
-
-        .limit-progress {
-            height: 6px;
-            background: var(--border-light);
-            border-radius: 3px;
-            overflow: hidden;
-            margin-bottom: 8px;
-        }
-
-        .limit-bar {
-            height: 100%;
-            background: var(--accent-green);
-            border-radius: 3px;
-            transition: width 0.3s;
-        }
-
-        .limit-bar.warning {
-            background: var(--accent-orange);
-        }
-
-        .limit-bar.danger {
-            background: var(--accent-red);
-        }
-
-        .limit-stats {
-            display: flex;
-            justify-content: space-between;
-            font-size: 13px;
-            color: var(--text-tertiary);
-        }
-
-        .limit-remaining {
-            color: var(--accent-green);
-            font-weight: 600;
         }
 
         /* ====== Analytics Page ====== */
@@ -1073,6 +1019,18 @@
             justify-content: center;
         }
 
+        /* ====== Input Group ====== */
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
         /* ====== Easter Egg ====== */
         .easter-egg {
             position: fixed;
@@ -1332,15 +1290,15 @@
                     <div class="action-label">Цели</div>
                     <div class="action-subtitle">Добавить цель</div>
                 </div>
-                <div class="action-btn" onclick="showModal('limitsModal')">
-                    <div class="action-icon">⚡</div>
-                    <div class="action-label">Лимиты</div>
-                    <div class="action-subtitle">Контроль трат</div>
-                </div>
                 <div class="action-btn" onclick="showPage('profile')">
                     <div class="action-icon">👤</div>
                     <div class="action-label">Профиль</div>
                     <div class="action-subtitle">Статистика</div>
+                </div>
+                <div class="action-btn" onclick="addQuickTransaction('expense')">
+                    <div class="action-icon">💸</div>
+                    <div class="action-label">Быстрый расход</div>
+                    <div class="action-subtitle">Добавить трату</div>
                 </div>
             </div>
 
@@ -1501,14 +1459,6 @@
             <div>📊</div>
             <div class="nav-label">Аналитика</div>
         </div>
-        <div class="nav-item" onclick="showModal('addModal')">
-            <div>➕</div>
-            <div class="nav-label">Добавить</div>
-        </div>
-        <div class="nav-item" onclick="showPage('goals')">
-            <div>🎯</div>
-            <div class="nav-label">Цели</div>
-        </div>
         <div class="nav-item" onclick="showPage('profile')">
             <div>👤</div>
             <div class="nav-label">Профиль</div>
@@ -1516,20 +1466,6 @@
     </div>
 
     <!-- ====== MODALS ====== -->
-    <!-- Limits Modal -->
-    <div class="modal-overlay" id="limitsModal">
-        <div class="modal">
-            <div class="modal-header">
-                <div class="modal-title">🎯 Лимиты расходов</div>
-                <button class="modal-close" onclick="hideModal('limitsModal')">✕</button>
-            </div>
-            <div id="limitsForm">
-                <!-- Limits form will be generated by JavaScript -->
-            </div>
-            <button class="submit-btn" onclick="saveLimits()" style="margin-top: 24px;">Сохранить лимиты</button>
-        </div>
-    </div>
-
     <!-- Goal Modal -->
     <div class="modal-overlay" id="goalModal">
         <div class="modal">
@@ -1537,19 +1473,34 @@
                 <div class="modal-title">🎯 Новая цель</div>
                 <button class="modal-close" onclick="hideModal('goalModal')">✕</button>
             </div>
-            <div class="input-group" style="margin-bottom: 16px;">
+            <div class="input-group">
                 <div class="input-label">Название цели</div>
                 <input type="text" class="comment-input" id="goalName" placeholder="Новый телефон, путешествие...">
             </div>
-            <div class="input-group" style="margin-bottom: 16px;">
+            <div class="input-group">
                 <div class="input-label">Сумма цели</div>
                 <input type="number" class="comment-input" id="goalAmount" placeholder="100000" step="1000" min="100">
             </div>
-            <div class="input-group" style="margin-bottom: 16px;">
+            <div class="input-group">
                 <div class="input-label">Эмодзи</div>
                 <input type="text" class="comment-input" id="goalEmoji" placeholder="📱" maxlength="2">
             </div>
             <button class="submit-btn" onclick="addGoal()" style="margin-top: 16px;">Добавить цель</button>
+        </div>
+    </div>
+
+    <!-- Add Money to Goal Modal -->
+    <div class="modal-overlay" id="addToGoalModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title" id="addToGoalTitle">💰 Добавить в цель</div>
+                <button class="modal-close" onclick="hideModal('addToGoalModal')">✕</button>
+            </div>
+            <div class="input-group">
+                <div class="input-label" id="addToGoalText">Сколько добавить?</div>
+                <input type="number" class="comment-input" id="addToGoalAmount" placeholder="0" step="100" min="1">
+            </div>
+            <button class="submit-btn" onclick="addMoneyToGoal()" style="margin-top: 16px;">Добавить в цель</button>
         </div>
     </div>
 
@@ -1560,11 +1511,11 @@
                 <div class="modal-title">💰 Отложить деньги</div>
                 <button class="modal-close" onclick="hideModal('saveModal')">✕</button>
             </div>
-            <div class="input-group" style="margin-bottom: 16px;">
+            <div class="input-group">
                 <div class="input-label">Сумма для отложения</div>
                 <input type="number" class="comment-input" id="saveAmount" placeholder="0" step="100" min="0">
             </div>
-            <div class="input-group" style="margin-bottom: 16px;">
+            <div class="input-group">
                 <div class="input-label">Комментарий (необязательно)</div>
                 <input type="text" class="comment-input" id="saveComment" placeholder="На отпуск, на подарок...">
             </div>
@@ -1579,11 +1530,11 @@
                 <div class="modal-title">💸 Взять из отложенных</div>
                 <button class="modal-close" onclick="hideModal('takeModal')">✕</button>
             </div>
-            <div class="input-group" style="margin-bottom: 16px;">
+            <div class="input-group">
                 <div class="input-label">Сумма для снятия</div>
                 <input type="number" class="comment-input" id="takeAmount" placeholder="0" step="100" min="0">
             </div>
-            <div class="input-group" style="margin-bottom: 16px;">
+            <div class="input-group">
                 <div class="input-label">Комментарий (необязательно)</div>
                 <input type="text" class="comment-input" id="takeComment" placeholder="На срочные нужды...">
             </div>
@@ -1598,11 +1549,11 @@
                 <div class="modal-title">⚙️ Настройки</div>
                 <button class="modal-close" onclick="hideModal('settingsModal')">✕</button>
             </div>
-            <div class="input-group" style="margin-bottom: 16px;">
+            <div class="input-group">
                 <div class="input-label">Имя пользователя</div>
                 <input type="text" class="comment-input" id="userNameInput" placeholder="Ваше имя">
             </div>
-            <div class="input-group" style="margin-bottom: 16px;">
+            <div class="input-group">
                 <div class="input-label">Изменить PIN</div>
                 <input type="password" class="comment-input" id="newPinInput" placeholder="Новый PIN (4 цифры)" maxlength="4">
             </div>
@@ -1636,7 +1587,6 @@
         // ========== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ И КОНСТАНТЫ ==========
         const STORAGE_KEYS = {
             OPERATIONS: 'finance_operations',
-            LIMITS: 'finance_limits',
             PIN: 'finance_pin',
             THEME: 'finance_theme',
             GOALS: 'finance_goals',
@@ -1668,7 +1618,6 @@
         ];
 
         let transactions = [];
-        let limits = {};
         let goals = [];
         let savings = 0;
         let pinCode = '0000';
@@ -1679,6 +1628,7 @@
         let userName = 'Финансовый гений';
         let joinDate = new Date();
         let analyticsPeriod = 'month';
+        let currentGoalId = null;
 
         // ========== ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ ==========
         document.addEventListener('DOMContentLoaded', () => {
@@ -1799,10 +1749,8 @@
                 document.querySelectorAll('.nav-item')[0].classList.add('active');
             } else if (pageId === 'analytics') {
                 document.querySelectorAll('.nav-item')[1].classList.add('active');
-            } else if (pageId === 'goals') {
-                document.querySelectorAll('.nav-item')[3].classList.add('active');
             } else if (pageId === 'profile') {
-                document.querySelectorAll('.nav-item')[4].classList.add('active');
+                document.querySelectorAll('.nav-item')[2].classList.add('active');
             }
             
             // Update analytics if needed
@@ -1930,8 +1878,27 @@
             const btn = document.querySelector('.submit-btn');
             btn.style.animation = 'pulse 0.3s';
             setTimeout(() => btn.style.animation = '', 300);
+        }
+
+        function addQuickTransaction(type) {
+            const amount = prompt(`Введите сумму ${type === 'expense' ? 'расхода' : 'дохода'}:`);
+            if (!amount || parseFloat(amount) <= 0) return;
             
-            checkLimits(transaction);
+            const comment = prompt('Введите комментарий (необязательно):') || '';
+            
+            const transaction = {
+                id: Date.now(),
+                type: type,
+                amount: parseFloat(amount),
+                categoryId: type === 'expense' ? 9 : 106, // "Другое" для быстрых операций
+                comment: comment,
+                date: new Date().toISOString()
+            };
+            
+            transactions.unshift(transaction);
+            saveData();
+            updateUI();
+            showNotification(`✅ ${type === 'expense' ? 'Расход' : 'Доход'} добавлен!`);
         }
 
         function deleteTransaction(id) {
@@ -2073,6 +2040,80 @@
             showNotification(`🎯 Цель "${name}" добавлена!`);
         }
 
+        function showAddToGoalModal(goalId) {
+            const goal = goals.find(g => g.id === goalId);
+            if (!goal) return;
+            
+            currentGoalId = goalId;
+            document.getElementById('addToGoalTitle').textContent = `💰 Добавить в "${goal.name}"`;
+            document.getElementById('addToGoalText').textContent = `Сколько добавить? (Осталось ${(goal.targetAmount - goal.savedAmount).toFixed(0)} ₽)`;
+            document.getElementById('addToGoalAmount').value = '';
+            document.getElementById('addToGoalAmount').placeholder = `Максимум ${Math.min(goal.targetAmount - goal.savedAmount, calculateBalance()).toFixed(0)} ₽`;
+            
+            showModal('addToGoalModal');
+        }
+
+        function addMoneyToGoal() {
+            if (!currentGoalId) return;
+            
+            const goal = goals.find(g => g.id === currentGoalId);
+            if (!goal) return;
+            
+            const amountInput = document.getElementById('addToGoalAmount');
+            const amount = parseFloat(amountInput.value);
+            
+            if (!amount || amount <= 0) {
+                alert('Введите сумму для добавления');
+                return;
+            }
+            
+            // Проверяем, не превышает ли сумма оставшуюся до цели
+            const remaining = goal.targetAmount - goal.savedAmount;
+            if (amount > remaining) {
+                alert(`Максимальная сумма для добавления: ${remaining.toFixed(0)} ₽`);
+                return;
+            }
+            
+            // Проверяем, достаточно ли средств на балансе
+            const balance = calculateBalance();
+            if (amount > balance) {
+                alert('Недостаточно средств на балансе');
+                return;
+            }
+            
+            // Добавляем операцию расхода
+            const transaction = {
+                id: Date.now(),
+                type: 'expense',
+                amount: amount,
+                categoryId: 9, // "Другое" для целей
+                comment: `В цель: ${goal.name} ${goal.emoji}`,
+                date: new Date().toISOString()
+            };
+            
+            transactions.unshift(transaction);
+            
+            // Обновляем цель
+            goal.savedAmount += amount;
+            localStorage.setItem(STORAGE_KEYS.GOALS, JSON.stringify(goals));
+            
+            saveData();
+            updateUI();
+            
+            amountInput.value = '';
+            hideModal('addToGoalModal');
+            currentGoalId = null;
+            
+            showNotification(`✅ Добавлено ${amount} ₽ в цель "${goal.name}"`);
+            
+            // Если цель достигнута
+            if (goal.savedAmount >= goal.targetAmount) {
+                setTimeout(() => {
+                    showNotification(`🎉 Поздравляем! Цель "${goal.name}" достигнута!`);
+                }, 500);
+            }
+        }
+
         function updateGoals() {
             const container = document.getElementById('goalsList');
             container.innerHTML = '';
@@ -2100,7 +2141,7 @@
                             <span class="goal-emoji">${goal.emoji}</span>
                             <span>${goal.name}</span>
                         </div>
-                        <div class="goal-amount">${goal.savedAmount.toFixed(0)} / ${goal.targetAmount} ₽</div>
+                        <div class="goal-amount">${goal.savedAmount.toFixed(0)} / ${goal.targetAmount.toFixed(0)} ₽</div>
                     </div>
                     <div class="goal-progress">
                         <div class="goal-progress-bar" style="width: ${percentage}%"></div>
@@ -2109,143 +2150,14 @@
                         <span>${percentage.toFixed(0)}% выполнено</span>
                         <span class="goal-remaining">Осталось: ${remaining.toFixed(0)} ₽</span>
                     </div>
+                    <div class="goal-actions">
+                        <button class="goal-add-btn" onclick="showAddToGoalModal(${goal.id})">
+                            Добавить деньги
+                        </button>
+                    </div>
                 `;
                 container.appendChild(card);
             });
-        }
-
-        // ========== ЛИМИТЫ ==========
-        function showLimitsModal() {
-            const form = document.getElementById('limitsForm');
-            form.innerHTML = '';
-            
-            EXPENSE_CATEGORIES.forEach(category => {
-                const limit = limits[category.id] || '';
-                const spent = calculateCategorySpending(category.id);
-                const remaining = limit ? Math.max(limit - spent, 0) : 0;
-                
-                const div = document.createElement('div');
-                div.className = 'input-group';
-                div.style.marginBottom = '20px';
-                div.innerHTML = `
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                        <span style="font-size: 20px;">${category.emoji}</span>
-                        <span style="font-weight: 600;">${category.name}</span>
-                    </div>
-                    <input type="number" 
-                           class="comment-input" 
-                           id="limit_${category.id}"
-                           value="${limit}"
-                           placeholder="Без лимита"
-                           step="100"
-                           min="0"
-                           style="margin-bottom: 8px;">
-                    ${limit ? `
-                        <div style="font-size: 13px; color: var(--text-tertiary);">
-                            Потрачено: ${spent.toFixed(0)} ₽ | 
-                            Осталось: <span style="color: var(--accent-green); font-weight: 600;">${remaining.toFixed(0)} ₽</span>
-                        </div>
-                    ` : ''}
-                `;
-                form.appendChild(div);
-            });
-            
-            showModal('limitsModal');
-        }
-
-        function saveLimits() {
-            EXPENSE_CATEGORIES.forEach(category => {
-                const input = document.getElementById(`limit_${category.id}`);
-                const value = parseFloat(input.value);
-                if (value && value > 0) {
-                    limits[category.id] = value;
-                } else {
-                    delete limits[category.id];
-                }
-            });
-            
-            localStorage.setItem(STORAGE_KEYS.LIMITS, JSON.stringify(limits));
-            hideModal('limitsModal');
-            updateLimitsUI();
-            showNotification('✅ Лимиты сохранены');
-        }
-
-        function calculateCategorySpending(categoryId) {
-            const now = new Date();
-            return transactions
-                .filter(t => {
-                    const date = new Date(t.date);
-                    return t.type === 'expense' && 
-                           t.categoryId === categoryId &&
-                           date.getMonth() === now.getMonth() &&
-                           date.getFullYear() === now.getFullYear();
-                })
-                .reduce((sum, t) => sum + t.amount, 0);
-        }
-
-        function checkLimits(transaction) {
-            if (transaction.type !== 'expense') return;
-            
-            const limit = limits[transaction.categoryId];
-            if (!limit) return;
-            
-            const spent = calculateCategorySpending(transaction.categoryId);
-            
-            if (spent > limit) {
-                showNotification(`⚠️ Превышен лимит по категории "${getCategoryName(transaction.categoryId)}"`);
-            } else if (spent > limit * 0.8) {
-                showNotification(`⚠️ Близко к лимиту по категории "${getCategoryName(transaction.categoryId)}"`);
-            }
-        }
-
-        function updateLimitsUI() {
-            const container = document.getElementById('limitsList');
-            if (!container) return;
-            
-            container.innerHTML = '';
-            
-            Object.entries(limits).forEach(([categoryId, limit]) => {
-                const category = EXPENSE_CATEGORIES.find(c => c.id == categoryId);
-                if (!category) return;
-                
-                const spent = calculateCategorySpending(categoryId);
-                const percent = Math.min((spent / limit) * 100, 100);
-                const remaining = Math.max(limit - spent, 0);
-                
-                let barClass = 'limit-bar';
-                if (percent > 90) barClass += ' danger';
-                else if (percent > 70) barClass += ' warning';
-                
-                const item = document.createElement('div');
-                item.className = 'limit-item';
-                item.innerHTML = `
-                    <div class="limit-header">
-                        <div class="limit-title">
-                            <span class="limit-emoji">${category.emoji}</span>
-                            <span>${category.name}</span>
-                        </div>
-                        <div class="limit-amount">${spent.toFixed(0)} / ${limit} ₽</div>
-                    </div>
-                    <div class="limit-progress">
-                        <div class="${barClass}" style="width: ${percent}%"></div>
-                    </div>
-                    <div class="limit-stats">
-                        <span>${percent.toFixed(0)}% использовано</span>
-                        <span class="limit-remaining">Можно потратить: ${remaining.toFixed(0)} ₽</span>
-                    </div>
-                `;
-                container.appendChild(item);
-            });
-            
-            if (Object.keys(limits).length === 0) {
-                container.innerHTML = `
-                    <div class="limit-item" style="text-align: center; padding: 40px;">
-                        <div style="font-size: 48px; margin-bottom: 16px;">⚡</div>
-                        <div style="font-weight: 600; margin-bottom: 8px;">Лимиты не установлены</div>
-                        <div style="color: var(--text-tertiary);">Настройте лимиты для контроля расходов</div>
-                    </div>
-                `;
-            }
         }
 
         // ========== АНАЛИТИКА ==========
@@ -2474,7 +2386,6 @@
             
             updateTransactions();
             updateGoals();
-            updateLimitsUI();
             checkMotivation();
         }
 
@@ -2714,7 +2625,6 @@
         function backupData() {
             const data = {
                 transactions: transactions,
-                limits: limits,
                 goals: goals,
                 savings: savings,
                 userName: userName,
@@ -2749,7 +2659,6 @@
                         if (data.transactions && Array.isArray(data.transactions)) {
                             if (confirm('Заменить текущие данные резервной копией?')) {
                                 transactions = data.transactions;
-                                if (data.limits) limits = data.limits;
                                 if (data.goals) goals = data.goals;
                                 if (data.savings) savings = data.savings;
                                 if (data.userName) userName = data.userName;
@@ -2773,12 +2682,10 @@
         function resetData() {
             if (confirm('ВНИМАНИЕ!\n\nЭто действие удалит ВСЕ ваши данные без возможности восстановления.\n\nВы уверены?')) {
                 transactions = [];
-                limits = {};
                 goals = [];
                 savings = 0;
                 
                 localStorage.removeItem(STORAGE_KEYS.OPERATIONS);
-                localStorage.removeItem(STORAGE_KEYS.LIMITS);
                 localStorage.removeItem(STORAGE_KEYS.GOALS);
                 localStorage.removeItem(STORAGE_KEYS.SAVINGS);
                 
@@ -2795,7 +2702,6 @@
 
         function saveAllData() {
             saveData();
-            localStorage.setItem(STORAGE_KEYS.LIMITS, JSON.stringify(limits));
             localStorage.setItem(STORAGE_KEYS.GOALS, JSON.stringify(goals));
             localStorage.setItem(STORAGE_KEYS.SAVINGS, savings);
             localStorage.setItem(STORAGE_KEYS.USERNAME, userName);
@@ -2807,12 +2713,6 @@
             const savedTransactions = localStorage.getItem(STORAGE_KEYS.OPERATIONS);
             if (savedTransactions) {
                 transactions = JSON.parse(savedTransactions);
-            }
-            
-            // Загружаем лимиты
-            const savedLimits = localStorage.getItem(STORAGE_KEYS.LIMITS);
-            if (savedLimits) {
-                limits = JSON.parse(savedLimits);
             }
             
             // Загружаем цели
